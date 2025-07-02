@@ -9,13 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('videos', function (Blueprint $table) {
             $table->id();
+            $table->string('filename');
+            $table->string('path');
+            $table->integer('size');
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.

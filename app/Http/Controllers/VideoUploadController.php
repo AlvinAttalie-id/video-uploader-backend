@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\JsonResponse;
+use App\Models\Video;
 
 class VideoUploadController extends Controller
 {
@@ -15,16 +16,23 @@ class VideoUploadController extends Controller
             'video' => 'required|file|mimes:mp4,avi,mov,wmv,flv|max:51200', // max 50MB
         ]);
 
-        // Simpan file ke storage/public/videos
+        // Simpan video di storage
         $path = $request->file('video')->store('public/videos');
+        $size = $request->file('video')->getSize();
+        $filename = $request->file('video')->getClientOriginalName();
 
-        // Ambil URL publik (jika ingin dikirim ke frontend)
-        $url = Storage::url($path);
+        // Simpan metadata ke database
+        $video = Video::create([
+            'filename' => $filename,
+            'path' => $path,
+            'size' => $size,
+        ]);
 
+        // Kirim response
         return response()->json([
             'success' => true,
-            'message' => 'Video uploaded successfully.',
-            'url' => $url,
+            'message' => 'Video uploaded and saved to database.',
+            'data' => $video,
         ]);
     }
 }
